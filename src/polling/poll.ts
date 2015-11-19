@@ -30,10 +30,10 @@ class Poll {
                     'RegistrationToken': skypeAccount.registrationTokenParams.raw
                 }
             }, (error:any, response:http.IncomingMessage, body:any) => {
-                //if (!error && response.statusCode === 200) {
-                //    this.errorCount = 0;
-                //    Poll.parsePollResult(JSON.parse(body), messagesCallback);
-                //} else {
+                if (!error && response.statusCode === 200) {
+                    this.errorCount = 0;
+                    Poll.parsePollResult(JSON.parse(body), messagesCallback);
+                } else {
                     Utils.throwError('Failed to poll messages.');
                     this.errorCount++;
                     if (this.errorCount > Consts.SKYPEWEB_ERROR_RESET_COUNT) {
@@ -44,7 +44,7 @@ class Poll {
                         });
                         return;
                     }
-                //}
+                }
                 this.pollAll(skypeAccount, messagesCallback);
             });
         }, 1000);
