@@ -5,12 +5,21 @@ import SkypeAccount = require('./../skype_account');
 import Utils = require("./../utils");
 import http = require('http');
 import {CookieJar} from "request";
+import Login = require("../login");
 "use strict";
 
 class Poll {
+
+    private errorCount:number;
+
     private requestWithJar;
 
     constructor(cookieJar:CookieJar) {
+        this.errorCount = 0;
+        this.requestWithJar = request.defaults({jar: cookieJar});
+    }
+
+    public updateCookieJar(cookieJar:CookieJar) {
         this.requestWithJar = request.defaults({jar: cookieJar});
     }
 
@@ -21,11 +30,21 @@ class Poll {
                     'RegistrationToken': skypeAccount.registrationTokenParams.raw
                 }
             }, (error:any, response:http.IncomingMessage, body:any) => {
-                if (!error && response.statusCode === 200) {
-                    Poll.parsePollResult(JSON.parse(body), messagesCallback);
-                } else {
+                //if (!error && response.statusCode === 200) {
+                //    this.errorCount = 0;
+                //    Poll.parsePollResult(JSON.parse(body), messagesCallback);
+                //} else {
                     Utils.throwError('Failed to poll messages.');
-                }
+                    this.errorCount++;
+                    if (this.errorCount > Consts.SKYPEWEB_ERROR_RESET_COUNT) {
+                        this.errorCount = 0;
+                        new Login(request.jar()).doLogin(skypeAccount).then((skypeAccount:SkypeAccount)=> {
+                            Utils.throwError('Aquiring new token.');
+                            this.pollAll(skypeAccount, messagesCallback);
+                        });
+                        return;
+                    }
+                //}
                 this.pollAll(skypeAccount, messagesCallback);
             });
         }, 1000);

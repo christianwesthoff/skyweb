@@ -8,3 +8,4 @@ export const SKYPEWEB_CONTACTS_HOST = "contacts.skype.com";
 export const SKYPEWEB_DEFAULT_MESSAGES_HOST = 'client-s.gateway.messenger.live.com';
 export const SKYPEWEB_LOGIN_URL = 'https://login.skype.com/login?method=skype&client_id=578134&redirect_uri=https%3A%2F%2Fweb.skype.com';
 export const SKYPEWEB_SELF_DISPLAYNAME_URL = '/users/self/displayname';
+export const SKYPEWEB_ERROR_RESET_COUNT = 10;
